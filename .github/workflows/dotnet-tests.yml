@@ -25,6 +25,8 @@ jobs:
           set -euo pipefail
           shopt -s globstar nullglob
 
+          mkdir -p TestResults
+
           sln_files=(**/*.sln)
           if [ ${#sln_files[@]} -eq 0 ]; then
             echo "No solution files found."
@@ -34,6 +36,15 @@ jobs:
           for sln in "${sln_files[@]}"; do
             echo "::group::Testing $sln"
             dotnet restore "$sln"
-            dotnet test "$sln" --configuration Release --no-restore
+            sln_name="$(basename "$sln" .sln)"
+            dotnet test "$sln" --configuration Release --no-restore --logger "trx;LogFileName=${sln_name}.trx" --results-directory TestResults
             echo "::endgroup::"
           done
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: TestResults/**/*.trx
+          if-no-files-found: warn

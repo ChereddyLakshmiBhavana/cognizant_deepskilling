@@ -1,5 +1,7 @@
 # Cognizant Deepskilling
 
+[![Dotnet Build and Test](https://github.com/ChereddyLakshmiBhavana/cognizant_deepskilling/actions/workflows/dotnet-tests.yml/badge.svg)](https://github.com/ChereddyLakshmiBhavana/cognizant_deepskilling/actions/workflows/dotnet-tests.yml)
+
 This repository contains C#/.NET practice exercises organized by week.
 
 ## Repository Structure
