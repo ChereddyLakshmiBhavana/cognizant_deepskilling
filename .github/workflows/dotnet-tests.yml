@@ -1,0 +1,39 @@
+name: Dotnet Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore and test all solutions
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+
+          sln_files=(**/*.sln)
+          if [ ${#sln_files[@]} -eq 0 ]; then
+            echo "No solution files found."
+            exit 1
+          fi
+
+          for sln in "${sln_files[@]}"; do
+            echo "::group::Testing $sln"
+            dotnet restore "$sln"
+            dotnet test "$sln" --configuration Release --no-restore
+            echo "::endgroup::"
+          done
